@@ -8,7 +8,7 @@ def create_business_crew(api_key, business_info):
     # ---------------------------------------------------------
 
     llm = LLM(
-        model="groq/llama-3.3-70b-versatile",
+        model="openai/gpt-oss-120b",
         api_key=api_key,
         temperature=0.3
     )
