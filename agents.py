@@ -1,439 +1,194 @@
+import os
 from crewai import Agent, Task, Crew, Process, LLM
 
 
 def create_business_crew(api_key, business_info):
 
-    # ---------------------------------------------------------
-    # GROQ LLM
-    # ---------------------------------------------------------
+    os.environ["GROQ_API_KEY"] = api_key
+
+    # Prevent accidental OpenAI routing
+    os.environ.pop("OPENAI_API_KEY", None)
 
     llm = LLM(
-        model="openai/gpt-oss-120b",
+        model="groq/openai/gpt-oss-120b",
         api_key=api_key,
-        temperature=0.3
+        base_url="https://api.groq.com/openai/v1",
+        temperature=0.2
     )
 
-    # ---------------------------------------------------------
-    # AGENT 1: BUSINESS ANALYST
-    # ---------------------------------------------------------
+    # -------------------------
+    # Agents
+    # -------------------------
 
     business_analyst = Agent(
-        role="Business Data Analyst",
-        goal=(
-            "Analyze the business information provided by the user "
-            "and identify important business insights, trends, "
-            "strengths, weaknesses and opportunities."
-        ),
-        backstory=(
-            "You are an experienced business analyst. "
-            "You carefully examine business information and "
-            "turn raw information into clear and useful insights."
-        ),
+        role="Business Analyst",
+        goal="Analyze the business and understand its current situation.",
+        backstory="You are an experienced business analyst.",
         llm=llm,
-        verbose=True,
-        allow_delegation=False
+        verbose=True
     )
-
-    # ---------------------------------------------------------
-    # AGENT 2: PROBLEM DIAGNOSIS
-    # ---------------------------------------------------------
 
     problem_diagnosis = Agent(
-        role="Business Problem Diagnosis Specialist",
-        goal=(
-            "Identify the main business problems and explain "
-            "their possible causes based on the business analysis."
-        ),
-        backstory=(
-            "You are a business consultant who specializes in "
-            "finding the root causes of business problems. "
-            "You focus on practical and evidence-based diagnosis."
-        ),
+        role="Problem Diagnosis Specialist",
+        goal="Identify the main business problems and their possible causes.",
+        backstory="You specialize in finding the root causes of business problems.",
         llm=llm,
-        verbose=True,
-        allow_delegation=False
+        verbose=True
     )
-
-    # ---------------------------------------------------------
-    # AGENT 3: STRATEGY
-    # ---------------------------------------------------------
 
     strategy_agent = Agent(
-        role="Business Strategy Consultant",
-        goal=(
-            "Create practical strategies that can help the business "
-            "solve its identified problems and achieve its goals."
-        ),
-        backstory=(
-            "You are a strategic business consultant. "
-            "You create realistic strategies that small and medium "
-            "businesses can actually implement."
-        ),
+        role="Business Strategy Expert",
+        goal="Create practical strategies to improve business performance.",
+        backstory="You are a strategic business consultant.",
         llm=llm,
-        verbose=True,
-        allow_delegation=False
+        verbose=True
     )
-
-    # ---------------------------------------------------------
-    # AGENT 4: MARKETING
-    # ---------------------------------------------------------
 
     marketing_agent = Agent(
-        role="Marketing Strategist",
-        goal=(
-            "Develop marketing strategies, campaign ideas, "
-            "promotional ideas and customer engagement approaches "
-            "based on the business strategy."
-        ),
-        backstory=(
-            "You are a digital marketing strategist experienced "
-            "in social media marketing, customer acquisition, "
-            "brand awareness and online campaigns."
-        ),
+        role="Marketing Expert",
+        goal="Create marketing strategies to attract customers and increase sales.",
+        backstory="You are a digital marketing specialist.",
         llm=llm,
-        verbose=True,
-        allow_delegation=False
+        verbose=True
     )
-
-    # ---------------------------------------------------------
-    # AGENT 5: CONTENT
-    # ---------------------------------------------------------
 
     content_agent = Agent(
-        role="Marketing Content Specialist",
-        goal=(
-            "Create useful marketing content based on the business "
-            "strategy and marketing recommendations."
-        ),
-        backstory=(
-            "You are a professional content strategist. "
-            "You create social media posts, captions, hooks, "
-            "content ideas and calls to action."
-        ),
+        role="Content Strategist",
+        goal="Create useful marketing content ideas for the business.",
+        backstory="You are a creative content strategist.",
         llm=llm,
-        verbose=True,
-        allow_delegation=False
+        verbose=True
     )
-
-    # ---------------------------------------------------------
-    # AGENT 6: ACTION PLANNER
-    # ---------------------------------------------------------
 
     action_planner = Agent(
-        role="Business Action Planner",
-        goal=(
-            "Convert business recommendations into clear, "
-            "prioritized and actionable tasks."
-        ),
-        backstory=(
-            "You are a productivity and business operations expert. "
-            "You turn strategies into practical steps that a business "
-            "owner can follow."
-        ),
+        role="Action Planner",
+        goal="Convert business recommendations into practical actionable tasks.",
+        backstory="You specialize in turning strategies into clear action plans.",
         llm=llm,
-        verbose=True,
-        allow_delegation=False
+        verbose=True
     )
-
-    # ---------------------------------------------------------
-    # AGENT 7: BUSINESS MANAGER
-    # ---------------------------------------------------------
 
     business_manager = Agent(
-        role="Senior Business Manager",
-        goal=(
-            "Combine all agent outputs into one clear and practical "
-            "business improvement plan."
-        ),
-        backstory=(
-            "You are a senior business manager who reviews analysis, "
-            "diagnosis, strategy, marketing recommendations and "
-            "action plans. You produce a concise final business report."
-        ),
+        role="Business Manager",
+        goal="Combine all recommendations into one clear business report.",
+        backstory="You are a senior business manager who creates final business plans.",
         llm=llm,
-        verbose=True,
-        allow_delegation=False
+        verbose=True
     )
 
-    # =========================================================
-    # TASK 1: BUSINESS ANALYSIS
-    # =========================================================
+    # -------------------------
+    # Tasks
+    # -------------------------
 
     analysis_task = Task(
         description=f"""
-        Analyze the following business information:
+        Analyze the following business:
 
         {business_info}
 
         Identify:
-
-        1. Business overview
-        2. Main business goals
-        3. Important strengths
-        4. Important weaknesses
-        5. Opportunities
-        6. Threats or risks
-        7. Important business insights
-        8. Areas that need improvement
-
-        Do not invent specific facts that are not provided.
-        Clearly separate known information from reasonable assumptions.
-        """,
-
-        expected_output="""
-        A structured business analysis containing:
-        - Business overview
-        - Goals
-        - Strengths
+        - Current situation
+        - Business strengths
         - Weaknesses
         - Opportunities
-        - Risks
-        - Key insights
+        - Important observations
         """,
-
+        expected_output="A clear business analysis.",
         agent=business_analyst
     )
 
-    # =========================================================
-    # TASK 2: PROBLEM DIAGNOSIS
-    # =========================================================
-
     diagnosis_task = Task(
         description="""
-        Review the business analysis from the previous agent.
+        Based on the business analysis, identify the major problems.
 
-        Identify the most important business problems.
-
-        For each problem provide:
-
-        1. Problem
-        2. Possible cause
-        3. Business impact
-        4. Priority
-
-        Focus on the problems that can have the greatest effect
-        on the business.
-
-        Do not invent numerical data.
-        """,
-
-        expected_output="""
-        A prioritized list of business problems with:
-        - Problem
-        - Possible cause
+        Explain:
+        - Main problems
+        - Possible root causes
         - Business impact
-        - Priority
         """,
-
-        agent=problem_diagnosis,
-        context=[analysis_task]
+        expected_output="A clear problem diagnosis.",
+        agent=problem_diagnosis
     )
-
-    # =========================================================
-    # TASK 3: STRATEGY
-    # =========================================================
 
     strategy_task = Task(
         description="""
-        Based on the business analysis and problem diagnosis,
-        develop practical business strategies.
+        Create practical strategies to solve the identified problems.
 
-        For each strategy provide:
-
-        1. Strategy name
-        2. Problem it addresses
-        3. Why it can help
-        4. Implementation approach
-        5. Expected business benefit
-        6. Important considerations
-
-        Keep the strategies realistic for a small or medium business.
+        Include:
+        - Short-term strategies
+        - Long-term strategies
+        - Growth opportunities
         """,
-
-        expected_output="""
-        A practical business strategy plan containing:
-        - Strategy
-        - Problem addressed
-        - Implementation
-        - Expected benefit
-        - Considerations
-        """,
-
-        agent=strategy_agent,
-        context=[analysis_task, diagnosis_task]
+        expected_output="A practical business strategy.",
+        agent=strategy_agent
     )
-
-    # =========================================================
-    # TASK 4: MARKETING
-    # =========================================================
 
     marketing_task = Task(
         description="""
-        Based on the business analysis, problems and strategies,
-        create a practical marketing plan.
+        Create a marketing strategy based on the business analysis.
 
         Include:
-
-        1. Target audience
-        2. Marketing objectives
-        3. Marketing channels
-        4. Campaign ideas
-        5. Promotional ideas
-        6. Customer engagement ideas
-        7. Suggested calls to action
-
-        Focus on practical digital marketing opportunities.
+        - Target customers
+        - Marketing channels
+        - Customer acquisition ideas
+        - Sales improvement ideas
         """,
-
-        expected_output="""
-        A practical marketing plan with:
-        - Target audience
-        - Objectives
-        - Channels
-        - Campaign ideas
-        - Promotion ideas
-        - Engagement ideas
-        - CTAs
-        """,
-
-        agent=marketing_agent,
-        context=[analysis_task, diagnosis_task, strategy_task]
+        expected_output="A practical marketing strategy.",
+        agent=marketing_agent
     )
-
-    # =========================================================
-    # TASK 5: CONTENT
-    # =========================================================
 
     content_task = Task(
         description="""
-        Create marketing content based on the marketing plan.
+        Create useful content ideas for the business.
 
-        Generate:
-
-        1. Five social media content ideas
-        2. Three strong hooks
-        3. Three sample captions
-        4. Three calls to action
-        5. Three short-form video ideas
-
-        Keep the content relevant to the business.
-        Avoid making unsupported claims.
+        Include:
+        - Social media content ideas
+        - Promotional ideas
+        - Educational content
+        - Engagement content
         """,
-
-        expected_output="""
-        A content package containing:
-        - 5 content ideas
-        - 3 hooks
-        - 3 captions
-        - 3 CTAs
-        - 3 short video ideas
-        """,
-
-        agent=content_agent,
-        context=[marketing_task, strategy_task]
+        expected_output="A list of useful marketing content ideas.",
+        agent=content_agent
     )
-
-    # =========================================================
-    # TASK 6: ACTION PLAN
-    # =========================================================
 
     action_task = Task(
         description="""
-        Convert all recommendations into a practical action plan.
+        Convert all recommendations into an actionable plan.
 
-        Create:
-
-        1. Immediate actions
-        2. Short-term actions
-        3. Medium-term actions
-        4. Priority level
-        5. Suggested sequence
-
-        Make each action specific and easy to understand.
-
-        The business owner should be able to take the output
-        and start implementing it immediately.
-        """,
-
-        expected_output="""
-        A prioritized action plan containing:
-        - Immediate actions
-        - Short-term actions
-        - Medium-term actions
+        Include:
         - Priority
-        - Implementation sequence
+        - Action
+        - Expected result
+        - Suggested timeline
         """,
-
-        agent=action_planner,
-        context=[
-            analysis_task,
-            diagnosis_task,
-            strategy_task,
-            marketing_task,
-            content_task
-        ]
+        expected_output="A practical action plan.",
+        agent=action_planner
     )
-
-    # =========================================================
-    # TASK 7: FINAL BUSINESS REPORT
-    # =========================================================
 
     final_task = Task(
         description="""
         Create the final AI Business Assistant report.
 
-        Combine the useful information from all previous agents.
+        Organize the report into:
 
-        Use the following structure:
+        1. Executive Summary
+        2. Business Analysis
+        3. Main Problems
+        4. Business Strategies
+        5. Marketing Strategy
+        6. Content Ideas
+        7. Action Plan
+        8. Final Recommendations
 
-        # AI BUSINESS ASSISTANT REPORT
-
-        ## 1. Business Overview
-
-        ## 2. Key Business Insights
-
-        ## 3. Main Problems
-
-        ## 4. Recommended Business Strategies
-
-        ## 5. Marketing Strategy
-
-        ## 6. Content Recommendations
-
-        ## 7. Action Plan
-
-        ## 8. Priority Actions
-
-        ## 9. Final Recommendations
-
-        Keep the report practical, clear and easy for a business
-        owner to understand.
-
-        Do not repeat unnecessary information.
-        Do not invent facts.
+        Make the report clear, practical and easy to understand.
         """,
-
-        expected_output="""
-        A complete professional AI Business Assistant report
-        containing business analysis, problems, strategies,
-        marketing recommendations, content ideas and an
-        actionable implementation plan.
-        """,
-
-        agent=business_manager,
-        context=[
-            analysis_task,
-            diagnosis_task,
-            strategy_task,
-            marketing_task,
-            content_task,
-            action_task
-        ]
+        expected_output="A complete business improvement report.",
+        agent=business_manager
     )
 
-    # =========================================================
-    # CREATE CREW
-    # =========================================================
+    # -------------------------
+    # Crew
+    # -------------------------
 
     crew = Crew(
         agents=[
@@ -445,7 +200,6 @@ def create_business_crew(api_key, business_info):
             action_planner,
             business_manager
         ],
-
         tasks=[
             analysis_task,
             diagnosis_task,
@@ -455,7 +209,6 @@ def create_business_crew(api_key, business_info):
             action_task,
             final_task
         ],
-
         process=Process.sequential,
         verbose=True
     )
