@@ -1,2 +1,2 @@
-crewai
-streamlit
+crewai==1.15.23
+streamlit==1.65.0
