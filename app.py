@@ -1,246 +1,432 @@
 import streamlit as st
 from agents import create_business_crew
 
-
-# ---------------------------------------------------------
-# PAGE CONFIGURATION
-# ---------------------------------------------------------
-
+# -----------------------------
+# Page Configuration
+# -----------------------------
 st.set_page_config(
     page_title="AI Business Assistant",
     page_icon="🤖",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
 
-
-# ---------------------------------------------------------
-# CUSTOM CSS
-# ---------------------------------------------------------
-
+# -----------------------------
+# Custom CSS
+# -----------------------------
 st.markdown("""
 <style>
 
-.main {
-    background-color: #f8f9fc;
-}
+    /* Main Background */
+    .stApp {
+        background: linear-gradient(
+            135deg,
+            #0f172a 0%,
+            #172554 45%,
+            #312e81 100%
+        );
+        color: white;
+    }
 
-.title {
-    text-align: center;
-    font-size: 42px;
-    font-weight: bold;
-}
+    /* Hide Streamlit Header */
+    header {
+        visibility: hidden;
+    }
 
-.subtitle {
-    text-align: center;
-    font-size: 18px;
-    color: #666;
-    margin-bottom: 30px;
-}
+    /* Main Container */
+    .block-container {
+        padding-top: 2rem;
+        padding-bottom: 3rem;
+        max-width: 1200px;
+    }
+
+    /* Hero Section */
+    .hero {
+        padding: 35px;
+        border-radius: 25px;
+        background: linear-gradient(
+            135deg,
+            rgba(37, 99, 235, 0.35),
+            rgba(124, 58, 237, 0.35)
+        );
+        border: 1px solid rgba(255,255,255,0.15);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+        margin-bottom: 30px;
+    }
+
+    .hero h1 {
+        font-size: 45px;
+        margin-bottom: 10px;
+        color: white;
+    }
+
+    .hero p {
+        font-size: 18px;
+        color: #dbeafe;
+    }
+
+    /* Cards */
+    .card {
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.12);
+        padding: 25px;
+        border-radius: 20px;
+        margin-bottom: 20px;
+        backdrop-filter: blur(10px);
+    }
+
+    .card h3 {
+        color: #c4b5fd;
+    }
+
+    /* Section Titles */
+    .section-title {
+        font-size: 28px;
+        font-weight: 700;
+        margin-top: 20px;
+        margin-bottom: 15px;
+        color: white;
+    }
+
+    /* Buttons */
+    .stButton > button {
+        width: 100%;
+        border-radius: 12px;
+        border: none;
+        padding: 14px;
+        font-size: 17px;
+        font-weight: 700;
+        color: white;
+        background: linear-gradient(
+            90deg,
+            #2563eb,
+            #7c3aed
+        );
+        transition: 0.3s;
+    }
+
+    .stButton > button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(124,58,237,0.4);
+    }
+
+    /* Input Fields */
+    .stTextInput input,
+    .stTextArea textarea,
+    .stSelectbox div[data-baseweb="select"] {
+        background-color: rgba(255,255,255,0.08);
+        color: white;
+        border-radius: 12px;
+    }
+
+    /* Sidebar */
+    section[data-testid="stSidebar"] {
+        background: linear-gradient(
+            180deg,
+            #111827,
+            #1e1b4b
+        );
+    }
+
+    /* Success */
+    .success-box {
+        background: rgba(34,197,94,0.12);
+        border: 1px solid rgba(34,197,94,0.3);
+        padding: 18px;
+        border-radius: 15px;
+    }
+
+    /* Feature Cards */
+    .feature {
+        text-align: center;
+        padding: 20px;
+        border-radius: 18px;
+        background: rgba(255,255,255,0.07);
+        border: 1px solid rgba(255,255,255,0.12);
+        height: 150px;
+    }
+
+    .feature-icon {
+        font-size: 35px;
+    }
+
+    .feature-title {
+        font-size: 17px;
+        font-weight: 700;
+        margin-top: 8px;
+    }
+
+    .feature-text {
+        font-size: 13px;
+        color: #cbd5e1;
+    }
 
 </style>
 """, unsafe_allow_html=True)
 
 
-# ---------------------------------------------------------
-# HEADER
-# ---------------------------------------------------------
-
-st.markdown(
-    '<div class="title">🤖 AI Business Assistant</div>',
-    unsafe_allow_html=True
-)
-
-st.markdown(
-    '<div class="subtitle">'
-    'Analyze your business, identify problems, create strategies, '
-    'generate marketing content and build an action plan.'
-    '</div>',
-    unsafe_allow_html=True
-)
-
-
-# ---------------------------------------------------------
-# SIDEBAR
-# ---------------------------------------------------------
-
+# -----------------------------
+# Sidebar
+# -----------------------------
 with st.sidebar:
 
-    st.header("⚙️ Settings")
+    st.markdown("## 🤖 AI Business Assistant")
 
-    api_key = st.text_input(
-        "Groq API Key",
-        type="password",
-        placeholder="Enter your Groq API key"
+    st.markdown("""
+    <div class="card">
+        <h3>🚀 AI-Powered Business Analysis</h3>
+        <p>
+        Analyze your business, identify problems,
+        create strategies, generate marketing ideas,
+        and build actionable tasks.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("### 🧠 AI Agents")
+
+    st.markdown("""
+    **📊 Business Analyst**  
+    Analyzes your business
+
+    **🔍 Problem Diagnosis**  
+    Finds major problems
+
+    **🎯 Strategy Agent**  
+    Creates business strategies
+
+    **📢 Marketing Agent**  
+    Suggests marketing approaches
+
+    **✍️ Content Agent**  
+    Generates content ideas
+
+    **✅ Action Planner**  
+    Creates actionable tasks
+    """)
+
+    st.markdown("---")
+
+    st.caption("Powered by CrewAI + Groq")
+
+
+# -----------------------------
+# Hero Section
+# -----------------------------
+st.markdown("""
+<div class="hero">
+
+    <h1>🤖 AI Business Assistant</h1>
+
+    <p>
+    Your intelligent multi-agent business partner.
+    Analyze problems, discover opportunities,
+    create strategies and turn ideas into action.
+    </p>
+
+</div>
+""", unsafe_allow_html=True)
+
+
+# -----------------------------
+# Features
+# -----------------------------
+st.markdown(
+    '<div class="section-title">✨ What can AI Business Assistant do?</div>',
+    unsafe_allow_html=True
+)
+
+col1, col2, col3, col4 = st.columns(4)
+
+with col1:
+    st.markdown("""
+    <div class="feature">
+        <div class="feature-icon">📊</div>
+        <div class="feature-title">Analyze</div>
+        <div class="feature-text">
+        Understand your business data
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+with col2:
+    st.markdown("""
+    <div class="feature">
+        <div class="feature-icon">🔍</div>
+        <div class="feature-title">Diagnose</div>
+        <div class="feature-text">
+        Identify business problems
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+with col3:
+    st.markdown("""
+    <div class="feature">
+        <div class="feature-icon">🎯</div>
+        <div class="feature-title">Strategize</div>
+        <div class="feature-text">
+        Build practical strategies
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+with col4:
+    st.markdown("""
+    <div class="feature">
+        <div class="feature-icon">🚀</div>
+        <div class="feature-title">Take Action</div>
+        <div class="feature-text">
+        Turn ideas into tasks
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+
+st.markdown("<br>", unsafe_allow_html=True)
+
+
+# -----------------------------
+# Business Information
+# -----------------------------
+st.markdown(
+    '<div class="section-title">📋 Tell us about your business</div>',
+    unsafe_allow_html=True
+)
+
+col1, col2 = st.columns(2)
+
+with col1:
+
+    business_name = st.text_input(
+        "Business Name",
+        placeholder="e.g. Fashion Hub"
     )
 
-    st.info(
-        "Your API key is entered only for this session. "
-        "Do not hard-code your API key in your source code."
+    business_type = st.text_input(
+        "Business Type",
+        placeholder="e.g. Facebook Page / E-commerce Store"
     )
 
-    st.divider()
+    business_goal = st.selectbox(
+        "Main Business Goal",
+        [
+            "Increase Sales",
+            "Increase Brand Awareness",
+            "Get More Customers",
+            "Improve Social Media",
+            "Improve Customer Engagement",
+            "Grow Online Business"
+        ]
+    )
 
-    st.markdown("### 🤖 AI Agents")
 
-    st.write("1. Business Analyst")
-    st.write("2. Problem Diagnosis")
-    st.write("3. Strategy Agent")
-    st.write("4. Marketing Agent")
-    st.write("5. Content Agent")
-    st.write("6. Action Planner")
-    st.write("7. Business Manager")
+with col2:
+
+    business_problem = st.text_area(
+        "Current Business Problem",
+        placeholder="e.g. Low sales, low engagement, fewer customers...",
+        height=120
+    )
+
+    additional_data = st.text_area(
+        "Additional Business Information",
+        placeholder="Add products, target audience, location, social media details, etc.",
+        height=120
+    )
 
 
-# ---------------------------------------------------------
-# BUSINESS INFORMATION
-# ---------------------------------------------------------
+# -----------------------------
+# Analyze Button
+# -----------------------------
+st.markdown("<br>", unsafe_allow_html=True)
 
-st.subheader("📊 Tell us about your business")
-
-business_name = st.text_input(
-    "Business Name",
-    placeholder="Example: Fashion Store"
-)
-
-business_type = st.text_input(
-    "Business Type",
-    placeholder="Example: Online clothing store"
-)
-
-business_goal = st.text_area(
-    "Business Goal",
-    placeholder=(
-        "Example: Increase sales, improve customer engagement "
-        "and grow social media presence."
-    ),
-    height=100
-)
-
-business_problem = st.text_area(
-    "Current Business Problem",
-    placeholder=(
-        "Example: Sales have decreased, social media engagement "
-        "is low and we are not getting enough customers."
-    ),
-    height=120
-)
-
-business_data = st.text_area(
-    "Additional Business Data",
-    placeholder=(
-        "Add any useful information such as:\n"
-        "- Monthly sales\n"
-        "- Number of customers\n"
-        "- Social media followers\n"
-        "- Website traffic\n"
-        "- Products\n"
-        "- Target customers\n"
-        "- Marketing activities\n"
-        "- Competitor information"
-    ),
-    height=200
+analyze = st.button(
+    "🚀 Analyze My Business"
 )
 
 
-# ---------------------------------------------------------
-# ANALYZE BUTTON
-# ---------------------------------------------------------
-
-analyze_button = st.button(
-    "🚀 Analyze My Business",
-    use_container_width=True,
-    type="primary"
-)
-
-
-# ---------------------------------------------------------
-# RUN CREW
-# ---------------------------------------------------------
-
-if analyze_button:
-
-    if not api_key:
-        st.error("Please enter your Groq API key.")
-        st.stop()
+# -----------------------------
+# Run AI Crew
+# -----------------------------
+if analyze:
 
     if not business_name:
-        st.error("Please enter your business name.")
-        st.stop()
+        st.warning("Please enter your business name.")
 
-    if not business_type:
-        st.error("Please enter your business type.")
-        st.stop()
+    elif not business_type:
+        st.warning("Please enter your business type.")
 
-    if not business_problem:
-        st.error("Please describe your current business problem.")
-        st.stop()
+    elif not business_problem:
+        st.warning("Please describe your business problem.")
 
-    # Combine user information
+    else:
 
-    business_info = f"""
-    BUSINESS NAME:
-    {business_name}
+        # Get API key from Streamlit Secrets
+        try:
+            api_key = st.secrets["GROQ_API_KEY"]
+        except Exception:
+            st.error(
+                "Groq API key is not configured. "
+                "Please add GROQ_API_KEY to Streamlit Secrets."
+            )
+            st.stop()
 
-    BUSINESS TYPE:
-    {business_type}
+        business_info = f"""
+Business Name: {business_name}
 
-    BUSINESS GOAL:
-    {business_goal}
+Business Type: {business_type}
 
-    CURRENT BUSINESS PROBLEM:
-    {business_problem}
+Business Goal: {business_goal}
 
-    ADDITIONAL BUSINESS DATA:
-    {business_data}
-    """
+Current Problem: {business_problem}
 
-    # -----------------------------------------------------
-    # CREATE CREW
-    # -----------------------------------------------------
-
-    try:
+Additional Information:
+{additional_data}
+"""
 
         with st.spinner(
             "🤖 AI agents are analyzing your business..."
         ):
 
-            crew = create_business_crew(
-                api_key=api_key,
-                business_info=business_info
-            )
+            try:
 
-            result = crew.kickoff()
+                crew = create_business_crew(
+                    api_key=api_key,
+                    business_info=business_info
+                )
 
-        # -------------------------------------------------
-        # DISPLAY RESULT
-        # -------------------------------------------------
+                result = crew.kickoff()
 
-        st.success("Business analysis completed!")
+                st.markdown(
+                    '<div class="section-title">📊 Your AI Business Report</div>',
+                    unsafe_allow_html=True
+                )
 
-        st.divider()
+                st.markdown(
+                    '<div class="card">',
+                    unsafe_allow_html=True
+                )
 
-        st.subheader("📋 AI Business Report")
+                st.markdown(result.raw)
 
-        st.markdown(result.raw)
+                st.markdown("</div>", unsafe_allow_html=True)
 
-        # -------------------------------------------------
-        # DOWNLOAD REPORT
-        # -------------------------------------------------
+                st.success(
+                    "✅ Business analysis completed successfully!"
+                )
 
-        st.divider()
+                st.download_button(
+                    label="📥 Download Business Report",
+                    data=result.raw,
+                    file_name="AI_Business_Report.txt",
+                    mime="text/plain"
+                )
 
-        st.download_button(
-            label="📥 Download Business Report",
-            data=result.raw,
-            file_name="ai_business_report.txt",
-            mime="text/plain",
-            use_container_width=True
-        )
+            except Exception as e:
 
-    except Exception as e:
+                st.error(
+                    "Something went wrong while running the AI agents."
+                )
 
-        st.error(
-            "Something went wrong while running the AI agents."
-        )
-
-        st.exception(e)
+                st.code(str(e))
